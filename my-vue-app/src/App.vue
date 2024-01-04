@@ -39,7 +39,7 @@ function deleteExpense(item) {
 
         <v-data-table :headers="headers" :items="expenses" class="elevation-1">
           <template v-slot:item.action="{ item }">
-            <v-icon small @click="deleteExpense(item)" color="error">mdi-delete</v-icon>
+            <v-btn @click="deleteExpense(item)" color="error">Delete</v-btn>
           </template>
         </v-data-table>
       </v-container>
@@ -51,24 +51,3 @@ function deleteExpense(item) {
   </v-app>
 </template>
 
-<style scoped>
-.v-app-bar {
-  background-color: #1976D2;
-}
-
-.v-toolbar-title {
-  font-size: 24px;
-}
-
-.v-btn {
-  margin-top: 16px;
-}
-
-.v-data-table {
-  margin-top: 16px;
-}
-
-.v-footer {
-  padding: 16px;
-}
-</style>
