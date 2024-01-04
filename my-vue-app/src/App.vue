@@ -1,30 +1,74 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
+import { ref } from 'vue'
 
+const expense = ref({ name: '', amount: '' })
+const expenses = ref([])
+const valid = ref(false)
+const headers = [
+  { text: 'Name', value: 'name' },
+  { text: 'Amount', value: 'amount' },
+  { text: 'Actions', value: 'action', sortable: false },
+]
+
+function addExpense() {
+  expenses.value.push({ ...expense.value })
+  expense.value = { name: '', amount: '' }
+}
+
+function deleteExpense(item) {
+  const index = expenses.value.indexOf(item)
+  if (index !== -1) expenses.value.splice(index, 1)
+}
+
+</script>
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <v-app>
+    <v-app-bar app color="primary">
+      <v-toolbar-title class="white--text">Expense Tracker</v-toolbar-title>
+    </v-app-bar>
+
+    <v-main>
+      <v-container>
+        <v-container>
+          <v-form ref="form" v-model="valid" @submit.prevent="addExpense">
+            <v-text-field v-model="expense.name" :rules="[v => !!v || 'Name is required']" label="Name"></v-text-field>
+            <v-text-field v-model="expense.amount" :rules="[v => !!v || 'Amount is required']" label="Amount"></v-text-field>
+            <v-btn :disabled="!valid" type="submit" color="primary">Add Expense</v-btn>
+          </v-form>
+        </v-container>
+
+        <v-data-table :headers="headers" :items="expenses" class="elevation-1">
+          <template v-slot:item.action="{ item }">
+            <v-icon small @click="deleteExpense(item)" color="error">mdi-delete</v-icon>
+          </template>
+        </v-data-table>
+      </v-container>
+    </v-main>
+
+    <v-footer app color="primary" dark>
+      <span class="white--text">&copy; 2023</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.v-app-bar {
+  background-color: #1976D2;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.v-toolbar-title {
+  font-size: 24px;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.v-btn {
+  margin-top: 16px;
+}
+
+.v-data-table {
+  margin-top: 16px;
+}
+
+.v-footer {
+  padding: 16px;
 }
 </style>
