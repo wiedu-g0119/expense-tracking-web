@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
+const baseUrl = 'https://ominous-computing-machine-pjj6jjrvq9vvfqqg-8080.app.github.dev'
 const expense = ref({ name: '', amount: '' })
 const expenses = ref([])
 const valid = ref(false)
@@ -11,16 +12,48 @@ const headers = [
 ]
 
 function addExpense() {
-  expenses.value.push({ ...expense.value })
-  expense.value = { name: '', amount: '' }
+  fetch(baseUrl + '/api/expenses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(expense.value),
+  })
+    .then(response => response.json())
+    .then(data => {
+      expenses.value.push(data)
+      expense.value = { name: '', amount: '' }
+    })
+    .catch(error => {
+      console.error('Error adding expense:', error)
+    })
 }
 
 function deleteExpense(item) {
-  const index = expenses.value.indexOf(item)
-  if (index !== -1) expenses.value.splice(index, 1)
+  fetch(baseUrl + `/api/expenses/${item.id}`, {
+    method: 'DELETE',
+  })
+    .then(() => {
+      const index = expenses.value.indexOf(item)
+      if (index !== -1) expenses.value.splice(index, 1)
+    })
+    .catch(error => {
+      console.error('Error deleting expense:', error)
+    })
 }
 
+onMounted(() => {
+  fetch(baseUrl + '/api/expenses')
+    .then(response => response.json())
+    .then(data => {
+      expenses.value = data
+    })
+    .catch(error => {
+      console.error('Error fetching expenses:', error)
+    })
+})
 </script>
+
 <template>
   <v-app>
     <v-app-bar app color="primary">
@@ -50,4 +83,3 @@ function deleteExpense(item) {
     </v-footer>
   </v-app>
 </template>
-
